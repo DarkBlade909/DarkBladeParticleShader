@@ -796,6 +796,13 @@ namespace DarkBlade {
 			Vector2Field(vec, "Scrolling");
 		}
 
+		public static void TextureSOScrollCustom(MaterialEditor me, MaterialProperty vec1, MaterialProperty vec2, MaterialProperty vec3)
+		{
+			Vector2Field(vec1, "Tiling");
+			Vector2Field(vec2, "Offset");
+			Vector2Field(vec3, "Scrolling");
+		}
+
 		public static void TextureSOScroll(MaterialEditor me, MaterialProperty tex, MaterialProperty vec, bool shouldDisplay){
 			if (shouldDisplay){
 				me.TextureScaleOffsetProperty(tex);

@@ -13,41 +13,21 @@ internal class DarkBladeParticleGUI: ShaderGUI
 	}, 1);
 
 	string versionLabel = "v1.0";
-	public static string receiverText = "AreaLit Maps";
-	public static string emitterText = "AreaLit Light";
-	public static string projectorText = "AreaLit Projector";
-	// β
-
-	//	MaterialProperty _Dst = null;
-	//	MaterialProperty _Src = null;
-	//	MaterialProperty _MainTex = null;
-	//	MaterialProperty _ScrollingBase = null;
-	//	MaterialProperty _TileOffsetBase = null;
-	//	MaterialProperty _Distortion = null;
-	//	MaterialProperty _Distortion_ST = null;
-	//	MaterialProperty _DistortionStrength = null;
-	//	MaterialProperty _MultiplyStrengthbyAlpha = null;
-	//	MaterialProperty _MainTex1 = null;
-	//	MaterialProperty _ScrollingSecondary = null;
-	//	MaterialProperty _TileOffsetSecondary = null;
-	//	MaterialProperty _SecondaryStrength = null;
-	//	MaterialProperty _SecondaryTint = null;
-	//	MaterialProperty _Color = null;
-	//	MaterialProperty _SoftParticle = null;
-	//	MaterialProperty _Fresnel = null;
-	//	MaterialProperty _FadefromCenter = null;
 
 	MaterialProperty dst = null;
 	MaterialProperty src = null;
 	MaterialProperty mainTex = null;
+	MaterialProperty mainTexTile = null;
+	MaterialProperty mainTexOffset = null;
 	MaterialProperty scrollingBase = null;
-	MaterialProperty tileOffsetBase = null;
 	MaterialProperty distortion = null;
 	MaterialProperty distortionStrength = null;
 	MaterialProperty distortionSecondary = null;
 	MaterialProperty multiplyStrengthbyAlpha = null;
 	MaterialProperty multiplyAddSecondary = null;
 	MaterialProperty mainTex1 = null;
+	MaterialProperty mainTex1Tile = null;
+	MaterialProperty mainTex1Offset = null;
 	MaterialProperty scrollingSecondary = null;
 	MaterialProperty tileOffsetSecondary = null;
 	MaterialProperty secondaryStrength = null;
@@ -56,6 +36,7 @@ internal class DarkBladeParticleGUI: ShaderGUI
 	MaterialProperty softParticle = null;
 	MaterialProperty fresnel = null;
 	MaterialProperty fadefromCenter = null;
+	MaterialProperty culling = null;
 
 	MaterialEditor me;
 
@@ -66,15 +47,17 @@ internal class DarkBladeParticleGUI: ShaderGUI
 		dst = FindProperty("_Dst", props);
 		src = FindProperty("_Src", props);
 		mainTex = FindProperty("_MainTex", props);
+		mainTexTile = FindProperty("_MainTexTiling", props);
+		mainTexOffset = FindProperty("_MainTexOffset", props);
 		scrollingBase = FindProperty("_ScrollingBase", props);
-		tileOffsetBase = FindProperty("_TileOffsetBase", props);
 		distortion = FindProperty("_Distortion", props);
 		distortionStrength = FindProperty("_DistortionStrength", props);
 		multiplyStrengthbyAlpha = FindProperty("_MultiplyStrengthbyAlpha", props);
 		multiplyAddSecondary = FindProperty("_MultiplyAddSecondary", props);
 		mainTex1 = FindProperty("_MainTex1", props);
+		mainTex1Tile = FindProperty("_MainTex1Tiling", props);
+		mainTex1Offset = FindProperty("_MainTex1Offset", props);
 		scrollingSecondary = FindProperty("_ScrollingSecondary", props);
-		tileOffsetSecondary = FindProperty("_TileOffsetSecondary", props);
 		secondaryStrength = FindProperty("_SecondaryStrength", props);
 		secondaryTint = FindProperty("_SecondaryTint", props);
 		distortionSecondary = FindProperty("_DistortSecondaryColor", props);
@@ -82,6 +65,7 @@ internal class DarkBladeParticleGUI: ShaderGUI
 		softParticle = FindProperty("_SoftParticle", props);
 		fresnel = FindProperty("_Fresnel", props, false);
 		fadefromCenter = FindProperty("_FadefromCenter", props);
+		culling = FindProperty("_Culling", props);
 	}
 
 	public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
@@ -142,20 +126,22 @@ internal class DarkBladeParticleGUI: ShaderGUI
 		});
 		EditorGUI.BeginChangeCheck();
 		DGUI.PropertyGroup(() => {
-			DGUI.TextureSOScroll(me, mainTex, scrollingBase);
+			DGUI.TextureSOScrollCustom(me, mainTexTile,mainTexOffset, scrollingBase);
 		});
 	}
 	void DoSecondaryArea(Material material)
 	{
 		DGUI.PropertyGroup(() => {
 			me.TexturePropertySingleLine(DarkBladeTips.albedoText, mainTex1, secondaryTint);
-			me.ShaderProperty(secondaryStrength, "Secondary Strength");
-			me.ShaderProperty(multiplyAddSecondary, "Multiply/Add Secondary");
-			me.ShaderProperty(distortionSecondary, "Distort Secondary");
 		});
 		EditorGUI.BeginChangeCheck();
 		DGUI.PropertyGroup(() => {
-			DGUI.TextureSOScroll(me, mainTex1, scrollingSecondary);
+			DGUI.TextureSOScrollCustom(me, mainTex1Tile, mainTex1Offset, scrollingSecondary);
+		});
+		DGUI.PropertyGroup(() => {
+			me.ShaderProperty(secondaryStrength, "Secondary Strength");
+			me.ShaderProperty(multiplyAddSecondary, "Multiply/Add Secondary");
+			me.ShaderProperty(distortionSecondary, "Distort Secondary");
 		});
 	}
 	void DoDistortionArea(Material material)
@@ -166,6 +152,8 @@ internal class DarkBladeParticleGUI: ShaderGUI
 		EditorGUI.BeginChangeCheck();
 		DGUI.PropertyGroup(() => {
 			DGUI.TextureSO(me, distortion);
+		});
+		DGUI.PropertyGroup(() => {
 			me.ShaderProperty(multiplyStrengthbyAlpha, "Multiply Strength by Alpha");
 		});
 	}
@@ -176,6 +164,7 @@ internal class DarkBladeParticleGUI: ShaderGUI
 		me.ShaderProperty(fresnel, "Fresnel Culling");
 		me.ShaderProperty(softParticle, "Soft Particle");
 		me.ShaderProperty(dst, "Blend Mode");
+		me.ShaderProperty(culling, "Culling Mode");
 	}
 
 }
